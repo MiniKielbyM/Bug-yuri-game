@@ -1,0 +1,37 @@
+using UnityEngine;
+
+public class UniversalCanvasAnimationController : MonoBehaviour
+{
+    Animator animator;
+    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    void Start()
+    {
+        animator = GetComponent<Animator>();
+        animator.updateMode = AnimatorUpdateMode.UnscaledTime;
+        Time.timeScale = 0f;
+        FadeIn();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+
+    }
+
+    public void FadeOut()
+    {
+        animator.SetTrigger("FadeOut");
+    }
+    public void FadeIn()
+    {
+        animator.SetTrigger("FadeIn");
+    }
+    public void ResetTrigger(string triggerName)
+    {
+        if (triggerName == "FadeIn")
+        {
+            Time.timeScale = 1f;
+        }
+        animator.ResetTrigger(triggerName);
+    }
+}

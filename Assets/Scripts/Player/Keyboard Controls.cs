@@ -48,7 +48,7 @@ public class KeyboardControls : MonoBehaviour
                 attackArm = 1;
                 AttackArm2.SetActive(true);
                 WalkkArm2.SetActive(false);
-                animator.SetTrigger("Attack 1");
+                animator.SetTrigger("Attack 2");
             }
         }
     }
@@ -165,15 +165,15 @@ public class KeyboardControls : MonoBehaviour
     public void EndAttack(int arm)
     {
         isAttacking -= 0.5f;
-        animator.ResetTrigger("Attack 1");
-        animator.ResetTrigger("Attack 2");
         if (arm == 1)
         {
+            animator.ResetTrigger("Attack 1");
             AttackArm1.SetActive(false);
             WalkArm1.SetActive(true);
         }
         else
         {
+            animator.ResetTrigger("Attack 2");
             AttackArm2.SetActive(false);
             WalkkArm2.SetActive(true);
         }
