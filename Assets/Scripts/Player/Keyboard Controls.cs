@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class KeyboardControls : MonoBehaviour
 {
@@ -15,8 +16,11 @@ public class KeyboardControls : MonoBehaviour
     public GameObject WalkkArm2;
     public float isAttacking = 0f;
     int attackArm = 1;
+    public bool Interacting = false;
     Animator animator;
-
+    public GameObject interactText;
+    public GameObject interactObject;
+    public UniversalCanvasAnimationController canvasController;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -30,9 +34,8 @@ public class KeyboardControls : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W) && isGrounded)
         {
             rb.AddForce(new Vector2(0f, 11.5f * (1f + (Math.Abs(move) / 10f) - 0.1f)), ForceMode2D.Impulse);
-            isGrounded = false;
         }
-        if (Input.GetMouseButtonDown(0) && isAttacking < 1f)
+        if (Input.GetMouseButtonDown(0) && isAttacking < 1f && Time.timeScale == 1f)
         {
             isAttacking += 0.5f;
             Debug.Log("Attack initiated");
@@ -51,6 +54,22 @@ public class KeyboardControls : MonoBehaviour
                 animator.SetTrigger("Attack 2");
             }
         }
+        if (Input.GetKeyDown(KeyCode.E) && interactObject != null && Time.timeScale == 1f)
+        {
+            Interactable interactable = interactObject.GetComponent<Interactable>();
+            if (interactable != null)
+            {
+                interactable.Interact();
+            }
+        }
+        if (Input.GetMouseButtonDown(0) && Time.timeScale == 0f && Interacting)
+        {
+            Interactable interactable = interactObject.GetComponent<Interactable>();
+            if (interactable != null)
+            {
+                interactable.AdvanceDialogue();
+            }
+        }
     }
 
     void OnTriggerEnter2D(Collider2D collision)
@@ -60,6 +79,17 @@ public class KeyboardControls : MonoBehaviour
         {
             isGrounded = true;
         }
+        if (collision.gameObject.CompareTag("Interactable") && Time.timeScale == 1f)
+        {
+            interactText.SetActive(true);
+            interactObject = collision.gameObject;
+        }
+        if (collision.gameObject.CompareTag("Danger"))
+        {
+            Debug.Log("Hit danger! Player died!");
+            UniversalCanvasAnimationController.FadeOut();
+            HandleDeath();
+        }
     }
     void OnTriggerExit2D(Collider2D collision)
     {
@@ -67,8 +97,23 @@ public class KeyboardControls : MonoBehaviour
         {
             isGrounded = false;
         }
+        if (collision.gameObject.CompareTag("Interactable") && Time.timeScale == 1f)
+        {
+            interactText.SetActive(false);
+            interactObject = null;
+        }
     }
-
+    void OnTriggerStay2D(Collider2D collision)
+    {
+        if (collision.gameObject.CompareTag("Interactable") && Time.timeScale == 1f)
+        {
+            if (!interactText.activeSelf)
+            {
+                interactObject = collision.gameObject;
+                interactText.SetActive(true);
+            }
+        }
+    }
     void FixedUpdate()
     {
 
@@ -87,48 +132,48 @@ public class KeyboardControls : MonoBehaviour
         // Input
         if (Input.GetKey(KeyCode.A) && !Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
-            ForwardSprite.SetActive(false);
             SidewaysSprite.SetActive(true);
+            ForwardSprite.SetActive(false);
             move = -1f;
             isFacingRight = false;
             animator.SetInteger("State", 1);
         }
         if (Input.GetKey(KeyCode.A) && Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
-            ForwardSprite.SetActive(false);
             SidewaysSprite.SetActive(true);
+            ForwardSprite.SetActive(false);
             move = -2f;
             isFacingRight = false;
             animator.SetInteger("State", 2);
         }
         if (Input.GetKey(KeyCode.D) && !Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
-            ForwardSprite.SetActive(false);
             SidewaysSprite.SetActive(true);
+            ForwardSprite.SetActive(false);
             move = 1f;
             isFacingRight = true;
             animator.SetInteger("State", 1);
         }
         if (Input.GetKey(KeyCode.D) && Input.GetKey(KeyCode.LeftShift) && isGrounded)
         {
-            ForwardSprite.SetActive(false);
             SidewaysSprite.SetActive(true);
+            ForwardSprite.SetActive(false);
             move = 2f;
             isFacingRight = true;
             animator.SetInteger("State", 2);
         }
         if (Input.GetKey(KeyCode.D) && !isGrounded)
         {
-            ForwardSprite.SetActive(false);
             SidewaysSprite.SetActive(true);
+            ForwardSprite.SetActive(false);
             move = 0.75f;
             isFacingRight = true;
             animator.SetInteger("State", 1);
         }
         if (Input.GetKey(KeyCode.A) && !isGrounded)
         {
-            ForwardSprite.SetActive(false);
             SidewaysSprite.SetActive(true);
+            ForwardSprite.SetActive(false);
             move = -0.75f;
             isFacingRight = false;
             animator.SetInteger("State", 1);
@@ -153,8 +198,8 @@ public class KeyboardControls : MonoBehaviour
         }
         if (isAttacking > 0f)
         {
-            ForwardSprite.SetActive(false);
             SidewaysSprite.SetActive(true);
+            ForwardSprite.SetActive(false);
         }
         // Clamp speed
         rb.linearVelocity = new Vector2(
@@ -177,5 +222,10 @@ public class KeyboardControls : MonoBehaviour
             AttackArm2.SetActive(false);
             WalkkArm2.SetActive(true);
         }
+    }
+
+    public void HandleDeath()
+    {
+        SaveGame.HandlePlayerDeath();
     }
 }

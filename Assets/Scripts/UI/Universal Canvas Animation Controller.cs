@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class UniversalCanvasAnimationController : MonoBehaviour
 {
-    Animator animator;
+    static Animator animator;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -18,11 +18,12 @@ public class UniversalCanvasAnimationController : MonoBehaviour
 
     }
 
-    public void FadeOut()
+    public static void FadeOut()
     {
+        Time.timeScale = 0f;
         animator.SetTrigger("FadeOut");
     }
-    public void FadeIn()
+    public static void FadeIn()
     {
         animator.SetTrigger("FadeIn");
     }

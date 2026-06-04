@@ -18,4 +18,18 @@ public class ESCMenuController : MonoBehaviour
             ESCMenu.SetActive(!ESCMenu.activeSelf);
         }
     }
+    public void ResumeGame()
+    {
+        Time.timeScale = 1f;
+        ESCMenu.SetActive(false);
+    }
+    public void Save()
+    {
+        SaveGame.SaveCurrentGame();
+        Debug.Log("Game saved.");
+    }
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
 }
