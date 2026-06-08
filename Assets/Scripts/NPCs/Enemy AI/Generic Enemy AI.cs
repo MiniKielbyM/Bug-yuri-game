@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class GenericEnemyAI : MonoBehaviour
@@ -118,14 +119,10 @@ public class GenericEnemyAI : MonoBehaviour
     private void AttackPlayer()
     {
         Debug.Log("Enemy attacking player! Player died!");
-        UniversalCanvasAnimationController.FadeOut();
+        StopMovement();
         KeyboardControls playerControls = playerTransform.GetComponent<KeyboardControls>();
-        if (playerControls != null)
-        {
-            playerControls.HandleDeath();
-        }
+        playerControls.HandleDeath();
     }
-
     private void StopMovement()
     {
         if (rb != null)

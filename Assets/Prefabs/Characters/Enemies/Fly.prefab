@@ -424,6 +424,7 @@ GameObject:
   - component: {fileID: 8608629821283175961}
   - component: {fileID: 5171411339620023582}
   - component: {fileID: 893440437663565878}
+  - component: {fileID: 8266639208497474003}
   m_Layer: 0
   m_Name: Fly
   m_TagString: Enemy
@@ -559,6 +560,19 @@ PolygonCollider2D:
       - {x: 1.8676227, y: -4.1581173}
       - {x: 3.6901424, y: -1.1382725}
   m_UseDelaunayMesh: 1
+--- !u!114 &8266639208497474003
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3498981266586479534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dafba9785f28b2e47a7fde3d13d4da9f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemySaveID
+  enemyID: 
 --- !u!1 &3548428835014808032
 GameObject:
   m_ObjectHideFlags: 0

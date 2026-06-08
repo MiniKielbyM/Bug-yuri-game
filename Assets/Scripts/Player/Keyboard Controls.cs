@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,12 +22,24 @@ public class KeyboardControls : MonoBehaviour
     public GameObject interactText;
     public GameObject interactObject;
     public UniversalCanvasAnimationController canvasController;
+    private bool isDead = false;
+    public bool inBossDialogue = false;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         AttackArm1.SetActive(false);
+
+        // Apply temporary spawn position if available (set by door teleport)
+        Vector3? spawnPos = SaveGame.GetAndClearTempSpawnPosition();
+        if (spawnPos.HasValue)
+        {
+            transform.position = spawnPos.Value;
+            Debug.Log($"Player spawned at temporary spawn position: {spawnPos.Value}");
+        }
     }
 
     void Update()
@@ -64,11 +77,26 @@ public class KeyboardControls : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0) && Time.timeScale == 0f && Interacting)
         {
-            Interactable interactable = interactObject.GetComponent<Interactable>();
-            if (interactable != null)
+            if (!inBossDialogue)
             {
-                interactable.AdvanceDialogue();
+                Interactable interactable = interactObject.GetComponent<Interactable>();
+                if (interactable != null)
+                {
+                    interactable.AdvanceDialogue();
+                }
             }
+            else if (inBossDialogue)
+            {
+                EnterBossArea bossArea = interactObject.GetComponent<EnterBossArea>();
+                if (bossArea != null)
+                {
+                    bossArea.AdvanceDialogue();
+                }
+            }
+        }
+        if (Time.timeScale == 0f)
+        {
+            interactText.SetActive(false);
         }
     }
 
@@ -87,7 +115,6 @@ public class KeyboardControls : MonoBehaviour
         if (collision.gameObject.CompareTag("Danger"))
         {
             Debug.Log("Hit danger! Player died!");
-            UniversalCanvasAnimationController.FadeOut();
             HandleDeath();
         }
     }
@@ -113,10 +140,17 @@ public class KeyboardControls : MonoBehaviour
                 interactText.SetActive(true);
             }
         }
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            isGrounded = true;
+        }
     }
     void FixedUpdate()
     {
-
+        if (Time.timeScale == 0f)
+        {
+            return;
+        }
         float acceleration = 20f;
         float maxSpeed = 5f;
         float groundDrag = 10f;
@@ -224,8 +258,18 @@ public class KeyboardControls : MonoBehaviour
         }
     }
 
-    public void HandleDeath()
+
+    public async System.Threading.Tasks.Task HandleDeath()
     {
-        SaveGame.HandlePlayerDeath();
+        if (isDead)
+        {
+            return;
+        }
+        isDead = true;
+        UniversalCanvasAnimationController.FadeOut();
+        await System.Threading.Tasks.Task.Delay(1000);
+        SaveGame.LoadGame();
+        await System.Threading.Tasks.Task.Delay(100);
+        isDead = false;
     }
 }

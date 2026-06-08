@@ -4,20 +4,58 @@ public class CameraFollowPlayer : MonoBehaviour
 {
     public Transform playerTransform;
     public Vector3 offset;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
+    private Transform currentNPC;
+    private bool lockedOnNPC;
+    private bool transitioningToPlayer;
     void Update()
     {
-        if (playerTransform != null)
+        if (lockedOnNPC && currentNPC != null)
         {
-            Vector3 newPosition = playerTransform.position;
-            newPosition.z = transform.position.z; // Keep the camera's z position unchanged
-            transform.position = newPosition + offset;
+            Vector3 targetPos = currentNPC.position + offset;
+            targetPos.z = transform.position.z;
+
+            transform.position = Vector3.Lerp(
+                transform.position,
+                targetPos,
+                5f * Time.unscaledDeltaTime
+            );
         }
+        else if (transitioningToPlayer)
+        {
+            Vector3 targetPos = playerTransform.position + offset;
+            targetPos.z = transform.position.z;
+
+            transform.position = Vector3.Lerp(
+                transform.position,
+                targetPos,
+                5f * Time.unscaledDeltaTime
+            );
+
+            if (Vector3.Distance(transform.position, targetPos) < 0.1f)
+            {
+                transitioningToPlayer = false;
+            }
+        }
+        else
+        {
+            Vector3 targetPos = playerTransform.position + offset;
+            targetPos.z = transform.position.z;
+
+            transform.position = targetPos;
+        }
+    }
+
+    public void LockOnNPC(Transform npcTransform)
+    {
+        currentNPC = npcTransform;
+        lockedOnNPC = true;
+        transitioningToPlayer = false;
+    }
+
+    public void UnlockFromNPC()
+    {
+        lockedOnNPC = false;
+        currentNPC = null;
+        transitioningToPlayer = true;
     }
 }

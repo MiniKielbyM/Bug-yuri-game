@@ -25,6 +25,7 @@ public class UniversalCanvasAnimationController : MonoBehaviour
     }
     public static void FadeIn()
     {
+        Time.timeScale = 0f;
         animator.SetTrigger("FadeIn");
     }
     public void ResetTrigger(string triggerName)

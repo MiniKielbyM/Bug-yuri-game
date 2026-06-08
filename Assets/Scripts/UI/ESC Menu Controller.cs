@@ -6,7 +6,6 @@ public class ESCMenuController : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
     }
 
     // Update is called once per frame
@@ -14,12 +13,16 @@ public class ESCMenuController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             Time.timeScale = ESCMenu.activeSelf ? 1f : 0f;
             ESCMenu.SetActive(!ESCMenu.activeSelf);
         }
     }
     public void ResumeGame()
     {
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         Time.timeScale = 1f;
         ESCMenu.SetActive(false);
     }
@@ -27,6 +30,13 @@ public class ESCMenuController : MonoBehaviour
     {
         SaveGame.SaveCurrentGame();
         Debug.Log("Game saved.");
+    }
+    public async void Load()
+    {
+        ESCMenu.SetActive(false);
+        UniversalCanvasAnimationController.FadeOut();
+        await System.Threading.Tasks.Task.Delay(1000);
+        SaveGame.LoadGame();
     }
     public void QuitGame()
     {

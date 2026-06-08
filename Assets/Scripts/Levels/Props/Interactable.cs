@@ -4,17 +4,28 @@ using System.Collections;
 
 public enum InteractableType
 {
-    Chest,
     Door,
-    NPC,
-    Item,
-    Other
+    NPC
 }
 
 public enum NPCType
 {
     Player,
     NPC
+}
+
+public enum CollisionType
+{
+    Enter,
+    Stay,
+    Exit
+}
+
+public enum AreaTriggerCondition
+{
+    None,
+    EnemyDefeated,
+    ItemCollected
 }
 
 [System.Serializable]
@@ -36,11 +47,13 @@ public class Interactable : MonoBehaviour
 
     public InteractableType interactableType;
 
-    [ShowIf("interactableType", InteractableType.Other)]
-    public GameObject pointerReference;
 
     [ShowIf("interactableType", InteractableType.Door)]
     public Vector3 playerSpawnPosition;
+    [ShowIf("interactableType", InteractableType.Door)]
+    public bool changeLevel = false;
+    [ShowIf("changeLevel")]
+    public string nextLevelName;
 
     [ShowIf("interactableType", InteractableType.NPC)]
     public NPCDialogueSet[] npcDialogueSets;
@@ -51,15 +64,12 @@ public class Interactable : MonoBehaviour
     [ShowIf("interactableType", InteractableType.NPC)]
     public GameObject dialogueUI;
 
+
     private int currentDialogueIndex = 0;
     private int currentDialogueSet = 0;
     private GameObject player;
     public void Start()
     {
-        if (pointerReference != null)
-        {
-            pointerReference.SetActive(false);
-        }
         player = GameObject.FindWithTag("Player");
     }
     public void Interact()
@@ -111,15 +121,19 @@ public class Interactable : MonoBehaviour
     private IEnumerator TeleportPlayerWithFade()
     {
         UniversalCanvasAnimationController.FadeOut();
-
-        // Wait for fade out animation to complete (using real time since time is paused)
         yield return new WaitForSecondsRealtime(1f);
-
-        // Teleport player
-        player.transform.position = playerSpawnPosition;
-
-        // Fade back in
-        UniversalCanvasAnimationController.FadeIn();
-        Time.timeScale = 1f;
+        if (changeLevel && !string.IsNullOrEmpty(nextLevelName))
+        {
+            Time.timeScale = 1f;
+            SaveGame.SetNextSpawnPosition(playerSpawnPosition);
+            SaveGame.SaveCurrentGame(nextLevelName);
+        }
+        else
+        {
+            player.transform.position = playerSpawnPosition;
+            SaveGame.SetNextSpawnPosition(playerSpawnPosition);
+            SaveGame.SaveCurrentGame();
+            UniversalCanvasAnimationController.FadeIn();
+        }
     }
 }

@@ -14,10 +14,20 @@ public class ShatterableEnemy : MonoBehaviour
 
     void Start()
     {
-        // Get all SpriteRenderers in this enemy and its children
+        EnemySaveID saveID = GetComponent<EnemySaveID>();
+
+        if (saveID != null)
+        {
+            if (EnemyManager.DeadEnemies.Contains(saveID.enemyID))
+            {
+                Debug.Log($"Destroying previously dead enemy: {saveID.enemyID}");
+                Destroy(gameObject);
+                return;
+            }
+        }
+
         spriteRenderers = new List<SpriteRenderer>(GetComponentsInChildren<SpriteRenderer>());
 
-        // Log the enemy's scale
         Debug.Log($"Enemy global scale: {transform.lossyScale}");
         Debug.Log($"Enemy local scale: {transform.localScale}");
     }
@@ -31,6 +41,13 @@ public class ShatterableEnemy : MonoBehaviour
         foreach (SpriteRenderer spriteRenderer in spriteRenderers)
         {
             ShatterSprite(spriteRenderer);
+        }
+
+        EnemySaveID saveID = GetComponent<EnemySaveID>();
+
+        if (saveID != null)
+        {
+            EnemyManager.MarkDead(saveID.enemyID);
         }
 
         // Destroy the original enemy
@@ -155,7 +172,7 @@ public class ShatterableEnemy : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D collision)
     {
-        if (collision.gameObject.CompareTag("Weapon"))
+        if (collision.gameObject.CompareTag("Weapon") && gameObject.CompareTag("Enemy"))
         {
             Debug.Log("Enemy hit by weapon: " + collision.gameObject.name);
             Shatter();
@@ -164,7 +181,7 @@ public class ShatterableEnemy : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Weapon"))
+        if (collision.gameObject.CompareTag("Weapon") && gameObject.CompareTag("Enemy"))
         {
             Debug.Log("Enemy hit by weapon (collision): " + collision.gameObject.name);
             Shatter();
