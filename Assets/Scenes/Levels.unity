@@ -3919,7 +3919,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1758133026}
         m_TargetAssemblyTypeName: ESCMenuController, Assembly-CSharp
-        m_MethodName: Save
+        m_MethodName: QuitGame
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7028,7 +7028,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!212 &860127152
 SpriteRenderer:
   serializedVersion: 2
@@ -15426,6 +15426,18 @@ PrefabInstance:
     - target: {fileID: 5885237906513237705, guid: 35c72bb6ddfef9d458f4e9718ceaa147, type: 3}
       propertyPath: m_Name
       value: Blank Dialouge Box 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477557881940414908, guid: 35c72bb6ddfef9d458f4e9718ceaa147, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 32767
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477557881940414908, guid: 35c72bb6ddfef9d458f4e9718ceaa147, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7477557881940414908, guid: 35c72bb6ddfef9d458f4e9718ceaa147, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

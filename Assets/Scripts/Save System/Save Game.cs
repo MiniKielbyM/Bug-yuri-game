@@ -133,7 +133,13 @@ public class SaveGame : MonoBehaviour
 
         if (!File.Exists(savePath))
         {
-            Debug.LogWarning("No save file found.");
+            Debug.LogWarning("No save file found. Loading Scene 1.");
+
+            Time.timeScale = 1f;
+
+            // Replace "Scene1" with the actual name of your first scene
+            SceneManager.LoadScene("Scene1");
+
             return null;
         }
 
