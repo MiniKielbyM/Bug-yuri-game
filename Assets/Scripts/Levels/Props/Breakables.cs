@@ -96,6 +96,7 @@ public class Breakables : MonoBehaviour
                 GameObject piece = new GameObject("SpritePiece");
                 piece.transform.position = transform.position;
                 piece.transform.rotation = transform.rotation;
+                piece.transform.localScale = transform.lossyScale;
 
                 SpriteRenderer pieceRenderer = piece.AddComponent<SpriteRenderer>();
                 pieceRenderer.sprite = Sprite.Create(

@@ -77,6 +77,7 @@ public class KeyboardControls : MonoBehaviour
         }
         if (Input.GetMouseButtonDown(0) && Time.timeScale == 0f && Interacting)
         {
+            Debug.Log("Interacting");
             if (!inBossDialogue)
             {
                 Interactable interactable = interactObject.GetComponent<Interactable>();

@@ -151,49 +151,42 @@ public class SaveGame : MonoBehaviour
 
     private static IEnumerator LoadSaveRoutine(bool reload)
     {
-        Debug.Log("Load routine started");
+        if (pendingLoadData == null)
+            yield break;
 
-        Time.timeScale = 1f;
+        EnemyManager.Clear();
 
-        if (reload && pendingLoadData != null)
+        foreach (EnemySaveData enemy in pendingLoadData.deadEnemies)
         {
-            Debug.Log("Loading scene");
+            EnemyManager.MarkDead(enemy.enemyID);
+        }
 
+        if (reload)
+        {
             AsyncOperation loadOperation =
-                SceneManager.LoadSceneAsync(
-                    pendingLoadData.playerData.currentScene
-                );
+                SceneManager.LoadSceneAsync(pendingLoadData.playerData.currentScene);
 
             while (!loadOperation.isDone)
-            {
                 yield return null;
-            }
-
-            Debug.Log("Scene loaded");
         }
-
-        Debug.Log("Waiting for player");
-
-        GameObject player = null;
-
-        while (player == null)
-        {
-            player = GameObject.FindWithTag("Player");
-            yield return null;
-        }
-
-        Debug.Log("Applying save");
 
         ApplySaveData(pendingLoadData);
     }
 
     public static void ApplySaveData(GameSaveData saveData)
     {
-        Debug.Log("Applying save data to scene");
 
         if (saveData == null || saveData.playerData == null)
             return;
+        Debug.Log($"Save contains {saveData.deadEnemies.Count} dead enemies");
 
+        EnemyManager.Clear();
+
+        foreach (EnemySaveData enemy in saveData.deadEnemies)
+        {
+            Debug.Log($"Loading dead enemy ID: {enemy.enemyID}");
+            EnemyManager.MarkDead(enemy.enemyID);
+        }
         EnemyManager.Clear();
 
         foreach (EnemySaveData enemy in saveData.deadEnemies)
@@ -201,16 +194,40 @@ public class SaveGame : MonoBehaviour
             EnemyManager.MarkDead(enemy.enemyID);
         }
 
+        Debug.Log($"Before Clear: {EnemyManager.DeadEnemies.Count}");
+
+        EnemyManager.Clear();
+
+        Debug.Log($"After Clear: {EnemyManager.DeadEnemies.Count}");
+
+        foreach (EnemySaveData enemy in saveData.deadEnemies)
+        {
+            EnemyManager.MarkDead(enemy.enemyID);
+        }
+
+        Debug.Log($"After Load: {EnemyManager.DeadEnemies.Count}");
+
+        EnemySaveID[] enemies =
+            Object.FindObjectsOfType<EnemySaveID>();
+
+        foreach (EnemySaveID enemy in enemies)
+        {
+            if (EnemyManager.DeadEnemies.Contains(enemy.enemyID))
+            {
+                Object.Destroy(enemy.gameObject);
+            }
+        }
+
         GameObject player = GameObject.FindWithTag("Player");
 
-        if (player == null)
-            return;
-
-        player.transform.position = new Vector3(
-            saveData.playerData.playerPositionX,
-            saveData.playerData.playerPositionY,
-            saveData.playerData.playerPositionZ
-        );
+        if (player != null)
+        {
+            player.transform.position = new Vector3(
+                saveData.playerData.playerPositionX,
+                saveData.playerData.playerPositionY,
+                saveData.playerData.playerPositionZ
+            );
+        }
     }
 
     public static bool SaveFileExists()

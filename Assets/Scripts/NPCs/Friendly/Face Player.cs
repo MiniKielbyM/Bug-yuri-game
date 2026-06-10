@@ -27,7 +27,7 @@ public class FacePlayer : MonoBehaviour
                 // Player is to the right, face right
                 targetScale = new Vector3(0.25f, 0.25f, 0.25f);
             }
-            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.deltaTime * smoothSpeed);
+            transform.localScale = Vector3.Lerp(transform.localScale, targetScale, Time.unscaledDeltaTime * smoothSpeed);
         }
     }
 }

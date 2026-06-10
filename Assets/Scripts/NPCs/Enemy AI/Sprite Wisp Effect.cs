@@ -8,18 +8,31 @@ public class SpriteWispEffect : MonoBehaviour
     public float horizontalDrift = 0.5f;
     public bool destroyAfter = true;
 
+    private bool isWisping = false;
+
     public void WispAway()
     {
+        if (isWisping)
+            return;
+
+        isWisping = true;
+
         SpriteRenderer[] sprites = GetComponentsInChildren<SpriteRenderer>();
 
         foreach (SpriteRenderer sprite in sprites)
         {
             StartCoroutine(WispSprite(sprite));
         }
+
+        if (destroyAfter)
+            StartCoroutine(DestroyAfterWisp());
     }
 
     private IEnumerator WispSprite(SpriteRenderer sprite)
     {
+        if (sprite == null)
+            yield break;
+
         Vector3 startPos = sprite.transform.position;
         Vector3 endPos = startPos +
                          Vector3.up * upwardDistance +
@@ -34,10 +47,11 @@ public class SpriteWispEffect : MonoBehaviour
 
         while (elapsed < duration)
         {
+            if (sprite == null)
+                yield break;
+
             elapsed += Time.deltaTime;
             float t = elapsed / duration;
-
-            // Smooth easing
             float smoothT = Mathf.SmoothStep(0f, 1f, t);
 
             sprite.transform.position = Vector3.Lerp(startPos, endPos, smoothT);
@@ -49,13 +63,19 @@ public class SpriteWispEffect : MonoBehaviour
 
             yield return null;
         }
-
-        if (destroyAfter)
-            Destroy(sprite.gameObject);
     }
-    public void OnTriggerEnter2D(Collider2D collision)
+
+    private IEnumerator DestroyAfterWisp()
     {
-        if (collision.gameObject.CompareTag("Weapon"))
+        yield return new WaitForSeconds(duration);
+        Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log("test");
+
+        if (collision.CompareTag("Weapon"))
         {
             WispAway();
         }

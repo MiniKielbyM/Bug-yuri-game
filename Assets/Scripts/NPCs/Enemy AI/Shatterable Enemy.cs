@@ -11,13 +11,36 @@ public class ShatterableEnemy : MonoBehaviour
 
     private List<SpriteRenderer> spriteRenderers;
     private bool isShattered = false;
+    void Awake()
+    {
+        Debug.Log($"{name} Awake");
+    }
 
+    void OnEnable()
+    {
+        Debug.Log($"{name} Enabled");
+    }
+
+    void OnDisable()
+    {
+        Debug.Log($"{name} Disabled");
+    }
+
+    void OnDestroy()
+    {
+        Debug.Log($"{name} Destroyed");
+    }
     void Start()
     {
+        Debug.Log($"Enemy started: {name}");
+
         EnemySaveID saveID = GetComponent<EnemySaveID>();
 
         if (saveID != null)
         {
+            Debug.Log($"Enemy ID: {saveID.enemyID}");
+            Debug.Log($"Dead? {EnemyManager.DeadEnemies.Contains(saveID.enemyID)}");
+
             if (EnemyManager.DeadEnemies.Contains(saveID.enemyID))
             {
                 Debug.Log($"Destroying previously dead enemy: {saveID.enemyID}");
@@ -49,7 +72,8 @@ public class ShatterableEnemy : MonoBehaviour
         {
             EnemyManager.MarkDead(saveID.enemyID);
         }
-
+        Debug.Log($"Marking enemy dead: {saveID.enemyID}");
+        EnemyManager.MarkDead(saveID.enemyID);
         // Destroy the original enemy
         Destroy(gameObject);
     }

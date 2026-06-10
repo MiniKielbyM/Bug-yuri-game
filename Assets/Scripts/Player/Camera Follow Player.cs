@@ -4,14 +4,14 @@ public class CameraFollowPlayer : MonoBehaviour
 {
     public Transform playerTransform;
     public Vector3 offset;
-    private Transform currentNPC;
-    private bool lockedOnNPC;
-    private bool transitioningToPlayer;
+    public Transform currentNPC;
+    public bool lockedOnNPC;
+    public bool transitioningToPlayer;
     void Update()
     {
         if (lockedOnNPC && currentNPC != null)
         {
-            Vector3 targetPos = currentNPC.position + offset;
+            Vector3 targetPos = currentNPC.position;
             targetPos.z = transform.position.z;
 
             transform.position = Vector3.Lerp(
@@ -54,6 +54,7 @@ public class CameraFollowPlayer : MonoBehaviour
 
     public void UnlockFromNPC()
     {
+        Debug.Log("test");
         lockedOnNPC = false;
         currentNPC = null;
         transitioningToPlayer = true;

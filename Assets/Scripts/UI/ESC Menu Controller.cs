@@ -13,8 +13,8 @@ public class ESCMenuController : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
+            Cursor.lockState = ESCMenu.activeSelf ? CursorLockMode.Locked : CursorLockMode.None;
+            Cursor.visible = !ESCMenu.activeSelf;
             Time.timeScale = ESCMenu.activeSelf ? 1f : 0f;
             ESCMenu.SetActive(!ESCMenu.activeSelf);
         }
@@ -33,10 +33,13 @@ public class ESCMenuController : MonoBehaviour
     }
     public async void Load()
     {
-        ESCMenu.SetActive(false);
-        UniversalCanvasAnimationController.FadeOut();
-        await System.Threading.Tasks.Task.Delay(1000);
-        SaveGame.LoadGame();
+        if (SaveGame.SaveFileExists())
+        {
+            ESCMenu.SetActive(false);
+            UniversalCanvasAnimationController.FadeOut();
+            await System.Threading.Tasks.Task.Delay(1000);
+            SaveGame.LoadGame();
+        }
     }
     public void QuitGame()
     {

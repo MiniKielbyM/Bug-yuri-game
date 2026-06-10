@@ -6,11 +6,14 @@ public class MainMenuController : MonoBehaviour
     public void NewGame()
     {
         SaveGame.DeleteSaveFile();
-        SceneManager.LoadScene(1);
+        SceneManager.LoadScene(2);
     }
     public void LoadGame()
     {
-        SaveGame.LoadGame();
+        if (SaveGame.SaveFileExists())
+        {
+            SaveGame.LoadGame();
+        }
     }
     public void QuitGame()
     {
