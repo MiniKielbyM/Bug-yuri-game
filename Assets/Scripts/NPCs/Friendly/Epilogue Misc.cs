@@ -10,9 +10,11 @@ public class EpilogueMisc : MonoBehaviour
         Time.timeScale = 0f;
         StartCoroutine(waitToSwitch(1f));
     }
+
     private IEnumerator waitToSwitch(float s)
     {
-        yield return new WaitForSeconds(s);
+        yield return new WaitForSecondsRealtime(s);
+
         SaveGame.DeleteSaveFile();
         SceneManager.LoadScene(0);
     }
