@@ -137,8 +137,7 @@ public class SaveGame : MonoBehaviour
 
             Time.timeScale = 1f;
 
-            // Replace "Scene1" with the actual name of your first scene
-            SceneManager.LoadScene("Scene1");
+            SceneManager.LoadScene("Levels");
 
             return null;
         }
